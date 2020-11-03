@@ -24,32 +24,32 @@ const path = require('path');
 app.use(express.static(__dirname + '/client'));
 app.use(bodyParser.urlencoded());
 ///////////////////////////////////////////////
+//not working :( 
 app.post('/', (req, res) => {
-    //takes what is added and send it to the function
-    let csvText = jsonToCsv(JSON.parse(req.body.csvInput))
-    fs.readFileAsync('./samples/textData.txt')
-        //read the file and then write it becuse it does not exist and give it a number 
+    let csvText = jsonToCsv(JSON.parse(req.body.csvInput));
+
+    fs.readFileAsync('./samples/counter.txt')
         .then(data => Promise.resolve(Number(data)))
         .catch(() => {
-            return fs.writeFileAsync('./samples/textData.txt', 0)
+            return fs.writeFileAsync('./samples/counter.txt', 0)
                 .then(() => 0);
         })
-        .then((num) => {
+        .then(num => {
             return fs.writeFileAsync(`${__dirname}/samples/${num}.csv`, csvText)
                 .then(() => Promise.resolve(num))
         })
-        .catch(() => console.log('error in writng file Async.'))
-})
+        .catch(() => console.log('Error writing File'))
+        .then((num = 0) => {
+            res.header("Content-Disposition", `attachment; filename=csv_report${num}.csv`);
+            res.sendFile(path.join(__dirname, `/samples/${num}.csv`));
+            return Promise.resolve(num);
+        })
+        .then(num => {
+            fs.writeFileAsync(`./samples/counter.txt`, num + 1);
+            return Promise.resolve(num);
+        })
 
-
-
-
-
-
-
-
-
-
+});
 //////////////////////////////////////////////////////////
 //Server Listen
 app.listen(port, (error) => {
