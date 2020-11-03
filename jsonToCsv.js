@@ -1,28 +1,28 @@
 //Takes the obj in sales_report.json and turn it to CSV string with commas. - works tested on replit
 exports.jsonToCsv = (obj) => {
     const header = 'firstName,lastName,county,city,role,sales';
-    const headerArray = header.split(',');
+    const headerArr = header.split(',');
 
-    // to create an array of obj 
-    let x = [];
+    let q = [];
     let current = obj;
-    x.push(current);
+    q.push(current);
 
     let csv = '';
 
-    while (x.length > 0) {
-        //remove the 1st.
-        let current = x.shift();
+    while (q.length > 0) {
+        let current = q.shift();
 
-        for (var i = 0; i < headerArray.length; i++) {
-            csv += current[headerArray[i]] + ',';
+        for (let i = 0; i < headerArr.length; i += 1) {
+            csv += current[headerArr[i]] + ',';
         }
-        csv += csv.substr(0, csv.length - 1) + '\n';
+
+        csv = csv.substr(0, csv.length - 1) + '\n';
 
         if (current.children.length > 0) {
-            current.children.forEach(child => { x.push(child) });
+            current.children.forEach(child => q.push(child));
         }
 
     }
-    return header + '\n' + csv.substr(0, csv.length - 2)
-}
+
+    return header + '\n' + csv.substr(0, csv.length - 2);
+};
